@@ -3,7 +3,6 @@ import requests
 
 logger = logging.getLogger('sotaog_public_api_client')
 
-
 class Client_Exception(Exception):
   pass
 

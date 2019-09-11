@@ -9,4 +9,5 @@ setup(
     author_email='zach@sotaog.com',
     license='MIT',
     packages=['sotaog_public_api_client'],
+    install_requires=['requests']
 )
