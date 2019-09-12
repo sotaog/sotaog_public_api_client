@@ -3,6 +3,7 @@ import requests
 
 logger = logging.getLogger('sotaog_public_api_client')
 
+
 class Client_Exception(Exception):
   pass
 
@@ -31,6 +32,28 @@ class Client():
     if self.customer_id:
       headers['x-sotaog-customer-id'] = self.customer_id
     return headers
+
+  def get_facilities(self):
+    logger.debug(f'Getting facilities')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/facilities', headers=headers)
+    if result.status_code == 200:
+      facilities = result.json()
+      logger.debug(f'Facilities: {facilities}')
+      return facilities
+    else:
+      raise Client_Exception(f'Unable to retrieve facilities')
+
+  def get_facility(self, facility_id: str):
+    logger.debug(f'Getting facility: {facility_id}')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/facilities/{facility_id}', headers=headers)
+    if result.status_code == 200:
+      facility = result.json()
+      logger.debug(f'Facility: {facility}')
+      return facility
+    else:
+      raise Client_Exception(f'Unable to retrieve facility {facility_id}')
 
   def get_assets(self, type: str, facility: str = None, asset_type: str = None):
     logger.debug(f'Getting assets of type: {type}')
