@@ -55,6 +55,17 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve facility {facility_id}')
 
+  def get_asset(self, asset_id, type: str):
+    logger.debug(f'Getting asset {asset_id} of type: {type}')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/{type}/{asset_id}', headers=headers)
+    if result.status_code == 200:
+      asset = result.json()
+      logger.debug(f'Asset: {asset}')
+      return asset
+    else:
+      raise Client_Exception(f'Unable to retrieve asset {asset_id} of type {type}')
+
   def get_assets(self, type: str, facility: str = None, asset_type: str = None):
     logger.debug(f'Getting assets of type: {type}')
     headers = self._get_headers()
