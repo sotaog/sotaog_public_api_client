@@ -70,6 +70,26 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve assets of type {asset_type}')
 
+  def get_datatypes(self):
+    logger.debug('Getting datatypes')
+    headers = self._get_headers()
+    params = {'group_by': 'asset'}
+    result = self.session.get(f'{self.url}/v1/datatypes', headers=headers, params=params)
+    if result.status_code == 200:
+        return result.json()
+    else:
+        raise Client_Exception('Unable to get datatypes')
+
+  def get_datatype(self, datatype_id):
+    logger.debug(f'Getting datatype {datatype_id}')
+    headers = self._get_headers()
+    params = {'group_by': 'asset'}
+    result = self.session.get(f'{self.url}/v1/datatypes/{datatype_id}', headers=headers, params=params)
+    if result.status_code == 200:
+        return result.json()
+    else:
+        raise Client_Exception(f'Unable to get datatype {datatype_id}')
+
   def get_datapoints(self, asset_datatypes: dict, start_ts: int = None, end_ts: int = None, sort: str = 'desc', limit: int = 100):
     logger.debug(f'Getting datapoints for asset_datatypes: {asset_datatypes}')
     headers = self._get_headers()
