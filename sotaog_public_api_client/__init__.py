@@ -33,6 +33,54 @@ class Client():
       headers['x-sotaog-customer-id'] = self.customer_id
     return headers
 
+  def get_alarm_services(self):
+    logger.debug(f'Getting alarm services')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/alarm-services', headers=headers)
+    if result.status_code == 200:
+      alarm_services = result.json()
+      logger.debug(f'Alarm Services: {alarm_services}')
+      return alarm_services
+    else:
+      raise Client_Exception(f'Unable to retrieve alarm services')
+
+  def get_alarm_service(self, alarm_service_id: str):
+    logger.debug(f'Getting alarm service {alarm_service_id}')
+    headers = self._get_headers()
+    url = f'{self.url}/v1/alarm-services/{alarm_service_id}'
+    result = self.session.get(url, headers=headers)
+    if result.status_code == 200:
+      alarm_service = result.json()
+      logger.debug(f'Alarm Service: {alarm_service}')
+      return alarm_service
+    else:
+      raise Client_Exception(f'Unable to retrieve alarm service {alarm_service_id}')
+
+  def get_alarms(self):
+    logger.debug(f'Getting alarms')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/alarms', headers=headers)
+    if result.status_code == 200:
+      alarms = result.json()
+      logger.debug(f'Alarms: {alarms}')
+      return alarms
+    else:
+      raise Client_Exception(f'Unable to retrieve alarms')
+
+  def get_alarm(self, asset_id: str, datatype: str = None):
+    logger.debug(f'Getting alarms for {asset_id}')
+    headers = self._get_headers()
+    url = f'{self.url}/v1/alarms/{asset_id}'
+    if datatype:
+      url += f'/{datatype}'
+    result = self.session.get(url, headers=headers)
+    if result.status_code == 200:
+      alarm = result.json()
+      logger.debug(f'Alarm: {alarm}')
+      return alarm
+    else:
+      raise Client_Exception(f'Unable to retrieve alarms for {asset_id}')
+
   def get_facilities(self):
     logger.debug(f'Getting facilities')
     headers = self._get_headers()
@@ -55,7 +103,7 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve facility {facility_id}')
 
-  def get_asset(self, asset_id, type: str):
+  def get_asset(self, asset_id, type: str = 'assets'):
     logger.debug(f'Getting asset {asset_id} of type: {type}')
     headers = self._get_headers()
     result = self.session.get(f'{self.url}/v1/{type}/{asset_id}', headers=headers)
@@ -66,7 +114,7 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve asset {asset_id} of type {type}')
 
-  def get_assets(self, type: str, facility: str = None, asset_type: str = None):
+  def get_assets(self, type: str = 'assets', facility: str = None, asset_type: str = None):
     logger.debug(f'Getting assets of type: {type}')
     headers = self._get_headers()
     result = self.session.get(f'{self.url}/v1/{type}', headers=headers)
@@ -81,10 +129,12 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve assets of type {asset_type}')
 
-  def get_datatypes(self):
+  def get_datatypes(self, group_by='asset'):
     logger.debug('Getting datatypes')
     headers = self._get_headers()
-    params = {'group_by': 'asset'}
+    params = {}
+    if group_by:
+      params['group_by']: group_by
     result = self.session.get(f'{self.url}/v1/datatypes', headers=headers, params=params)
     if result.status_code == 200:
         return result.json()
