@@ -230,6 +230,14 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve truck tickets')
 
+  def put_alarm(self, asset_id: str, datatype: str, alarm: object):
+    logger.debug(f'Creating alarm for {asset_id} {datatype}')
+    headers = self._get_headers()
+    result = self.session.put(f'{self.url}/v1/alarms/{asset_id}/{datatype}', headers=headers, json=alarm)
+    if result.status_code != 201:
+      logger.exception(result.json())
+      raise Exception('Unable to create alarm')
+
   def post_datapoints(self, asset_id, datapoints):
     logger.debug(f'Posting datapoints')
     headers = self._get_headers()
