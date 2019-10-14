@@ -137,7 +137,9 @@ class Client():
       params['group_by']: group_by
     result = self.session.get(f'{self.url}/v1/datatypes', headers=headers, params=params)
     if result.status_code == 200:
-        return result.json()
+      datatypes = result.json()
+      logger.debug(f'Datatypes: {datatypes}')
+      return datatypes
     else:
         raise Client_Exception('Unable to get datatypes')
 
@@ -147,7 +149,9 @@ class Client():
     params = {'group_by': 'asset'}
     result = self.session.get(f'{self.url}/v1/datatypes/{datatype_id}', headers=headers, params=params)
     if result.status_code == 200:
-        return result.json()
+        datatype = result.json()
+        logger.debug(f'Datatype: {datatype}')
+        return datatype
     else:
         raise Client_Exception(f'Unable to get datatype {datatype_id}')
 
