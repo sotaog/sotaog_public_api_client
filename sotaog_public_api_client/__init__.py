@@ -1,7 +1,9 @@
+import os
 import logging
 import requests
 
 logger = logging.getLogger('sotaog_public_api_client')
+logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
 
 
 class Client_Exception(Exception):
@@ -134,14 +136,14 @@ class Client():
     headers = self._get_headers()
     params = {}
     if group_by:
-      params['group_by']: group_by
+      params['group_by'] = group_by
     result = self.session.get(f'{self.url}/v1/datatypes', headers=headers, params=params)
     if result.status_code == 200:
       datatypes = result.json()
       logger.debug(f'Datatypes: {datatypes}')
       return datatypes
     else:
-        raise Client_Exception('Unable to get datatypes')
+      raise Client_Exception('Unable to get datatypes')
 
   def get_datatype(self, datatype_id):
     logger.debug(f'Getting datatype {datatype_id}')
