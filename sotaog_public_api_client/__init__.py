@@ -131,6 +131,28 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve assets of type {asset_type}')
 
+  def get_customers(self):
+    logger.debug('Getting customers')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/customers', headers=headers)
+    if result.status_code == 200:
+      customers = result.json()
+      logger.debug(f'Customers: {customers}')
+      return customers
+    else:
+      raise Client_Exception('Unable to get customers')
+
+  def get_customer(self, customer_id: str):
+    logger.debug(f'Getting customer {customer_id}')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/customers/{customer_id}', headers=headers)
+    if result.status_code == 200:
+      customer = result.json()
+      logger.debug(f'Customer: {customer}')
+      return customer
+    else:
+      raise Client_Exception(f'Unable to get customer {customer_id}')
+
   def get_datatypes(self, group_by='asset'):
     logger.debug('Getting datatypes')
     headers = self._get_headers()
