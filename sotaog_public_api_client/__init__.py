@@ -258,6 +258,26 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve truck tickets')
 
+  def post_truck_ticket(self, truck_ticket:object):
+    logger.debug(f'Creating truck ticket {truck_ticket}')
+    headers = self._get_headers()
+    result = self.session.post(f'{self.url}/v1/truck-tickets', headers=headers, json=truck_ticket)
+    if result.status_code == 201:
+      created_ticket = result.json()
+      logger.debug(f'Truck ticket: {created_ticket}')
+      return created_ticket
+    else:
+      raise Client_Exception(f'Unable to create truck ticket')
+
+  def put_truck_ticket_image(self, truck_ticket_id: str, image: bytes, content_type: str):
+    logger.debug(f'Creating truck ticket image size {len(image)}, content_type {content_type}')
+    headers = self._get_headers()
+    headers['content-type'] = content_type
+    result = self.session.put(f'{self.url}/v1/truck-tickets/{truck_ticket_id}/image', headers=headers, data=image)
+    if result.status_code != 204:
+      logger.exception(result.json())
+      raise Client_Exception(f'Unable to create truck ticket image')
+
   def put_alarm(self, asset_id: str, datatype: str, alarm: object):
     logger.debug(f'Creating alarm for {asset_id} {datatype}')
     headers = self._get_headers()
