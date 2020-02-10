@@ -213,8 +213,7 @@ class Client():
       body['end_ts'] = end_ts
     if sort:
       body['sort'] = sort
-    if limit:
-      body['limit'] = limit
+    body['limit'] = limit
     result = self.session.post(f'{self.url}/v1/datapoints', headers=headers, json=body)
     if result.status_code == 200:
       datapoints = result.json()
@@ -236,8 +235,7 @@ class Client():
       params['end_ts'] = end_ts
     if sort:
       params['sort'] = sort
-    if limit:
-      params['limit'] = limit
+    params['limit'] = limit
     result = self.session.get(f'{self.url}/v1/datapoints/{asset_id}', headers=headers, params=params)
     if result.status_code == 200:
       datapoints = result.json()
