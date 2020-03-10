@@ -293,3 +293,40 @@ class Client():
     if result.status_code != 202:
       logger.exception(result.json())
       raise Exception('Unable to post datapoints')
+
+  def batch_put_well_production(self, production: list):
+    logger.debug(f'Creating well production for {production}')
+    headers = self._get_headers()
+    result = self.session.put(f'{self.url}/v1/wells/production', headers=headers, json=production)
+    if result.status_code != 201:
+      logger.exception(result.json())
+      raise Exception('Unable to batch create well production')
+
+  def put_well_production(self, well_id: str, date: str, production: object):
+    logger.debug(f'Creating well production for {well_id} {date}: {production}')
+    headers = self._get_headers()
+    result = self.session.put(f'{self.url}/v1/wells/production/{well_id}/{date}', headers=headers, json=production)
+    if result.status_code != 201:
+      print(result.text)
+      logger.exception(result.json())
+      raise Exception('Unable to create well production')
+
+  def list_well_production(self, well_ids: list = None, facility_ids: list = None, start_date: str = None, end_date: str = None):
+    logger.debug(f'Getting well production')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if facility_ids:
+      params['facility_ids'] = facility_ids
+    if start_date:
+      params['start_date'] = start_date
+    if end_date:
+      params['end_date'] = end_date
+    result = self.session.get(f'{self.url}/v1/wells/production', headers=headers, params=params)
+    if result.status_code == 200:
+      well_production = result.json()
+      logger.debug(f'Well production: {well_production}')
+      return well_production
+    else:
+      raise Client_Exception(f'Unable to retrieve well production')
