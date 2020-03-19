@@ -1,9 +1,22 @@
+import functools
 import os
 import logging
 import requests
 
+from cachetools import cached, LRUCache, TTLCache
+from cachetools.keys import hashkey
+
 logger = logging.getLogger('sotaog_public_api_client')
 logger.setLevel(os.getenv('LOG_LEVEL', 'INFO'))
+
+
+def __hashkey(f):
+  @functools.wraps(f)
+  def wrapper(self, *args, **kwargs):
+    key = hashkey(*args, **kwargs)
+    key += tuple(self.customer_id)
+    return key
+  return wrapper
 
 
 class Client_Exception(Exception):
@@ -35,6 +48,12 @@ class Client():
       headers['x-sotaog-customer-id'] = self.customer_id
     return headers
 
+  def __hashkey(self, *args, **kwargs):
+    key = hashkey(*args, **kwargs)
+    key += tuple(self.customer_id)
+    return key
+
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_alarm_services(self):
     logger.debug(f'Getting alarm services')
     headers = self._get_headers()
@@ -45,7 +64,8 @@ class Client():
       return alarm_services
     else:
       raise Client_Exception(f'Unable to retrieve alarm services')
-
+  
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_alarm_service(self, alarm_service_id: str):
     logger.debug(f'Getting alarm service {alarm_service_id}')
     headers = self._get_headers()
@@ -57,7 +77,7 @@ class Client():
       return alarm_service
     else:
       raise Client_Exception(f'Unable to retrieve alarm service {alarm_service_id}')
-
+  
   def get_alarms(self):
     logger.debug(f'Getting alarms')
     headers = self._get_headers()
@@ -68,7 +88,7 @@ class Client():
       return alarms
     else:
       raise Client_Exception(f'Unable to retrieve alarms')
-
+  
   def get_alarm(self, asset_id: str, datatype: str = None):
     logger.debug(f'Getting alarms for {asset_id}')
     headers = self._get_headers()
@@ -83,6 +103,7 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve alarms for {asset_id}')
 
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_facilities(self):
     logger.debug(f'Getting facilities')
     headers = self._get_headers()
@@ -94,6 +115,7 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve facilities')
 
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_facility(self, facility_id: str):
     logger.debug(f'Getting facility: {facility_id}')
     headers = self._get_headers()
@@ -105,6 +127,7 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve facility {facility_id}')
 
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_asset(self, asset_id, type: str = 'assets'):
     logger.debug(f'Getting asset {asset_id} of type: {type}')
     headers = self._get_headers()
@@ -116,6 +139,7 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve asset {asset_id} of type {type}')
 
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_assets(self, type: str = 'assets', facility: str = None, asset_type: str = None):
     logger.debug(f'Getting assets of type: {type}')
     headers = self._get_headers()
@@ -130,7 +154,8 @@ class Client():
       return assets
     else:
       raise Client_Exception(f'Unable to retrieve assets of type {asset_type}')
-
+  
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_customers(self):
     logger.debug('Getting customers')
     headers = self._get_headers()
@@ -141,7 +166,8 @@ class Client():
       return customers
     else:
       raise Client_Exception('Unable to get customers')
-
+  
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_customer(self, customer_id: str):
     logger.debug(f'Getting customer {customer_id}')
     headers = self._get_headers()
@@ -152,7 +178,8 @@ class Client():
       return customer
     else:
       raise Client_Exception(f'Unable to get customer {customer_id}')
-
+  
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_datatypes(self, group_by='asset'):
     logger.debug('Getting datatypes')
     headers = self._get_headers()
@@ -166,7 +193,8 @@ class Client():
       return datatypes
     else:
       raise Client_Exception('Unable to get datatypes')
-
+  
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_datatype(self, datatype_id):
     logger.debug(f'Getting datatype {datatype_id}')
     headers = self._get_headers()
@@ -223,7 +251,8 @@ class Client():
       return datapoints
     else:
       raise Client_Exception('Unable to get datapoints')
-
+  
+  @cached(TTLCache(maxsize=32, ttl=30), key=__hashkey)
   def get_swd_networks(self, facility: str = None):
     logger.debug(f'Getting SWD networks')
     headers = self._get_headers()
@@ -258,7 +287,7 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve truck tickets')
 
-  def post_truck_ticket(self, truck_ticket:object):
+  def post_truck_ticket(self, truck_ticket: object):
     logger.debug(f'Creating truck ticket {truck_ticket}')
     headers = self._get_headers()
     result = self.session.post(f'{self.url}/v1/truck-tickets', headers=headers, json=truck_ticket)
