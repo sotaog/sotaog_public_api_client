@@ -352,3 +352,24 @@ class Client():
       return well_production
     else:
       raise Client_Exception(f'Unable to retrieve well production')
+
+  def get_well_type_curve(self, well_id: str):
+    logger.debug(f'Getting type curve for {well_id}')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/wells/{well_id}/type-curve', headers=headers)
+
+    if result.status_code == 200:
+      type_curve = result.json()
+      logger.debug(f'Type curve: {type_curve}')
+      return type_curve
+    else:
+      raise Client_Exception(f'Unable to retrieve type curve')
+
+
+  def put_well_type_curve(self, well_id: str, curve: object):
+    logger.debug(f'Creating type curve for {well_id}')
+    headers = self._get_headers()
+    result = self.session.put(f'{self.url}/v1/wells/{well_id}/type-curve', headers=headers, json=curve)
+    if result.status_code != 201:
+      logger.exception(result.json())
+      raise Client_Exception('Unable to create well type curve')
