@@ -280,7 +280,7 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve truck tickets')
 
-  def post_truck_ticket(self, truck_ticket:object):
+  def post_truck_ticket(self, truck_ticket: object):
     logger.debug(f'Creating truck ticket {truck_ticket}')
     headers = self._get_headers()
     result = self.session.post(f'{self.url}/v1/truck-tickets', headers=headers, json=truck_ticket)
@@ -365,7 +365,6 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve type curve')
 
-
   def put_well_type_curve(self, well_id: str, curve: object):
     logger.debug(f'Creating type curve for {well_id}')
     headers = self._get_headers()
@@ -373,3 +372,42 @@ class Client():
     if result.status_code != 201:
       logger.exception(result.json())
       raise Client_Exception('Unable to create well type curve')
+
+  def get_financials_categories(self):
+    logger.debug('Getting financials categories')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/financials-categories', headers=headers)
+
+    if result.status_code == 200:
+      categories = result.json()
+      logger.debug(f'Financials Categories: {categories}')
+      return categories
+    else:
+      raise Client_Exception(f'Unable to retrieve financials categories')
+
+  def post_financials_category(self, category: object):
+    logger.debug(f'Creating financials category {category}')
+    headers = self._get_headers()
+    result = self.session.post(f'{self.url}/v1/financials-categories', headers=headers, json=category)
+    if result.status_code == 201:
+      created = result.json()
+      logger.debug(f'Financials Category: {created}')
+      return created
+    else:
+      raise Client_Exception(f'Unable to create financials categories')
+
+  def put_financials(self, type: str, type_id: str, month: str, financials):
+    logger.debug(f'Putting financials for {type} {type_id} {month}')
+    headers = self._get_headers()
+    result = self.session.put(f'{self.url}/v1/financials/{type}/{type_id}/{month}', headers=headers, json=financials)
+    if result.status_code not in [200, 201]:
+      logger.exception(result.json())
+      raise Client_Exception('Unable to put financials')
+
+  def put_facility_sales(self, facility_id: str, month: str, sales):
+    logger.debug(f'Putting sales for {facility_id} {month}')
+    headers = self._get_headers()
+    result = self.session.put(f'{self.url}/v1/facilities/sales/{facility_id}/{month}', headers=headers, json=sales)
+    if result.status_code not in [200, 201]:
+      logger.exception(result.json())
+      raise Client_Exception('Unable to put sales')
