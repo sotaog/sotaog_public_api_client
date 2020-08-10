@@ -353,6 +353,18 @@ class Client():
     else:
       raise Client_Exception(f'Unable to retrieve well production')
 
+  def get_well_config(self, well_id: str):
+    logger.debug(f'Getting config for {well_id}')
+    headers = self._get_headers()
+    result = self.session.get(f'{self.url}/v1/wells/{well_id}/config', headers=headers)
+
+    if result.status_code == 200:
+      config = result.json()
+      logger.debug(f'config: {config}')
+      return config
+    else:
+      raise Client_Exception(f'Unable to retrieve config')
+
   def get_well_type_curve(self, well_id: str):
     logger.debug(f'Getting type curve for {well_id}')
     headers = self._get_headers()
