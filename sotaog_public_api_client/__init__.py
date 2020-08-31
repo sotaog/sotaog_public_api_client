@@ -423,3 +423,11 @@ class Client():
     if result.status_code not in [200, 201]:
       logger.exception(result.json())
       raise Client_Exception('Unable to put sales')
+
+  def put_well_config(self, well_id, config):
+    logger.debug('Putting config for {}'.format(well_id))
+    headers = self._get_headers()
+    result = self.session.put('{}/v1/wells/{}/config'.format(self.url, well_id), headers=headers, json=config)
+    if result.status_code != 201:
+      logger.exception(result.json())
+      raise Client_Exception('Unable to put well config')
