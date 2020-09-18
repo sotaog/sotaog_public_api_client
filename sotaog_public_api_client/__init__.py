@@ -11,16 +11,17 @@ class Client_Exception(Exception):
 
 
 class Client():
-  def __init__(self, url, client_id, client_secret, customer_id = None):
+  def __init__(self, url, client_id, client_secret, timeout = None, customer_id = None):
     self.session = requests.Session()
     self.url = url.rstrip('/')
     self.customer_id = customer_id
+    self.timeout = timeout
     logger.info('Initializing Sotaog API client for {}'.format(url))
     logger.debug('Authenticating to API: {}'.format(url))
     data = {
         'grant_type': 'client_credentials'
     }
-    result = self.session.post('{}/v1/authenticate'.format(self.url), data=data, auth=(client_id, client_secret))
+    result = self.session.post('{}/v1/authenticate'.format(self.url), data=data, auth=(client_id, client_secret), timeout=self.timeout)
     if result.status_code == 200:
       self.token = result.json()['access_token']
       logger.debug('Token: {}'.format(self.token))
@@ -38,7 +39,7 @@ class Client():
   def get_alarm_services(self):
     logger.debug('Getting alarm services')
     headers = self._get_headers()
-    result = self.session.get('{}/v1/alarm-services'.format(self.url), headers=headers)
+    result = self.session.get('{}/v1/alarm-services'.format(self.url), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       alarm_services = result.json()
       logger.debug('Alarm Services: {}'.format(alarm_services))
@@ -50,7 +51,7 @@ class Client():
     logger.debug('Getting alarm service {}'.format(alarm_service_id))
     headers = self._get_headers()
     url = '{}/v1/alarm-services/{}'.format(self.url, alarm_service_id)
-    result = self.session.get(url, headers=headers)
+    result = self.session.get(url, headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       alarm_service = result.json()
       logger.debug('Alarm Service: {}'.format(alarm_service))
@@ -61,7 +62,7 @@ class Client():
   def get_alarms(self):
     logger.debug('Getting alarms')
     headers = self._get_headers()
-    result = self.session.get('{}/v1/alarms'.format(self.url), headers=headers)
+    result = self.session.get('{}/v1/alarms'.format(self.url), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       alarms = result.json()
       logger.debug('Alarms: {}'.format(alarms))
@@ -75,7 +76,7 @@ class Client():
     url = '{}/v1/alarms/{}'.format(self.url, asset_id)
     if datatype:
       url += '/{}'.format(datatype)
-    result = self.session.get(url, headers=headers)
+    result = self.session.get(url, headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       alarm = result.json()
       logger.debug('Alarm: {}'.format(alarm))
@@ -86,7 +87,7 @@ class Client():
   def get_facilities(self):
     logger.debug('Getting facilities')
     headers = self._get_headers()
-    result = self.session.get('{}/v1/facilities'.format(self.url), headers=headers)
+    result = self.session.get('{}/v1/facilities'.format(self.url), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       facilities = result.json()
       logger.debug('Facilities: {}'.format(facilities))
@@ -97,10 +98,10 @@ class Client():
   def get_facility(self, facility_id):
     logger.debug('Getting facility: {}'.format(facility_id))
     headers = self._get_headers()
-    result = self.session.get('{}/v1/facilities/{}'.format(self.url, facility_id), headers=headers)
+    result = self.session.get('{}/v1/facilities/{}'.format(self.url, facility_id), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       facility = result.json()
-      logger.debug('Facility: {}', facility)
+      logger.debug('Facility: {}'.format(facility))
       return facility
     else:
       raise Client_Exception('Unable to retrieve facility {}'.format(facility_id))
@@ -108,7 +109,7 @@ class Client():
   def get_asset(self, asset_id, type = 'assets'):
     logger.debug('Getting asset {} of type: {}'.format(asset_id, type))
     headers = self._get_headers()
-    result = self.session.get('{}/v1/{}/{}'.format(self.url, type, asset_id), headers=headers)
+    result = self.session.get('{}/v1/{}/{}'.format(self.url, type, asset_id), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       asset = result.json()
       logger.debug('Asset: {}'.format(asset))
@@ -119,7 +120,7 @@ class Client():
   def get_assets(self, type = 'assets', facility = None, asset_type = None):
     logger.debug('Getting assets of type: {}'.format(type))
     headers = self._get_headers()
-    result = self.session.get('{}/v1/{}'.format(self.url, type), headers=headers)
+    result = self.session.get('{}/v1/{}'.format(self.url, type), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       assets = result.json()
       if facility:
@@ -134,7 +135,7 @@ class Client():
   def get_asset_type(self, asset_type_id):
     logger.debug('Getting asset type {}'.format(asset_type_id))
     headers = self._get_headers()
-    result = self.session.get('{}/v1/asset-types/{}'.format(self.url, asset_type_id), headers=headers)
+    result = self.session.get('{}/v1/asset-types/{}'.format(self.url, asset_type_id), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       asset_type = result.json()
       logger.debug('Asset Type: {}'.format(asset_type))
@@ -145,7 +146,7 @@ class Client():
   def get_asset_types(self):
     logger.debug('Getting asset types')
     headers = self._get_headers()
-    result = self.session.get('{}/v1/asset-types'.format(self.url), headers=headers)
+    result = self.session.get('{}/v1/asset-types'.format(self.url), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       asset_types = result.json()
       logger.debug('Asset types: {}'.format(asset_types))
@@ -156,7 +157,7 @@ class Client():
   def get_customers(self):
     logger.debug('Getting customers')
     headers = self._get_headers()
-    result = self.session.get('{}/v1/customers'.format(self.url), headers=headers)
+    result = self.session.get('{}/v1/customers'.format(self.url), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       customers = result.json()
       logger.debug('Customers: {}'.format(customers))
@@ -167,7 +168,7 @@ class Client():
   def get_customer(self, customer_id):
     logger.debug('Getting customer {}'.format(customer_id))
     headers = self._get_headers()
-    result = self.session.get('{}/v1/customers/{}'.format(self.url, customer_id), headers=headers)
+    result = self.session.get('{}/v1/customers/{}'.format(self.url, customer_id), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       customer = result.json()
       logger.debug('Customer: {}'.format(customer))
@@ -181,7 +182,7 @@ class Client():
     params = {}
     if group_by:
       params['group_by'] = group_by
-    result = self.session.get('{}/v1/datatypes'.format(self.url), headers=headers, params=params)
+    result = self.session.get('{}/v1/datatypes'.format(self.url), headers=headers, params=params, timeout=self.timeout)
     if result.status_code == 200:
       datatypes = result.json()
       logger.debug('Datatypes: {}'.format(datatypes))
@@ -193,7 +194,7 @@ class Client():
     logger.debug('Getting datatype {}'.format(datatype_id))
     headers = self._get_headers()
     params = {'group_by': 'asset'}
-    result = self.session.get('{}/v1/datatypes/{}'.format(self.url, datatype_id), headers=headers, params=params)
+    result = self.session.get('{}/v1/datatypes/{}'.format(self.url, datatype_id), headers=headers, params=params, timeout=self.timeout)
     if result.status_code == 200:
         datatype = result.json()
         logger.debug('Datatype: {}'.format(datatype))
@@ -215,7 +216,7 @@ class Client():
       body['sort'] = sort
     if limit:
       body['limit'] = limit
-    result = self.session.post('{}/v1/datapoints'.format(self.url), headers=headers, json=body)
+    result = self.session.post('{}/v1/datapoints'.format(self.url), headers=headers, json=body, timeout=self.timeout)
     if result.status_code == 200:
       datapoints = result.json()
       logger.debug('Datapoints: {}'.format(datapoints))
@@ -238,7 +239,7 @@ class Client():
       params['sort'] = sort
     if limit:
       params['limit'] = limit
-    result = self.session.get('{}/v1/datapoints/{}'.format(self.url, asset_id), headers=headers, params=params)
+    result = self.session.get('{}/v1/datapoints/{}'.format(self.url, asset_id), headers=headers, params=params, timeout=self.timeout)
     if result.status_code == 200:
       datapoints = result.json()
       logger.debug('Datapoints: {}'.format(datapoints))
@@ -249,7 +250,7 @@ class Client():
   def get_swd_networks(self, facility = None):
     logger.debug('Getting SWD networks')
     headers = self._get_headers()
-    result = self.session.get('{}/v1/swd-networks'.format(self.url), headers=headers)
+    result = self.session.get('{}/v1/swd-networks'.format(self.url), headers=headers, timeout=self.timeout)
     if result.status_code == 200:
       swd_networks = result.json()
       logger.debug('SWD Networks: {}'.format(swd_networks))
@@ -272,7 +273,7 @@ class Client():
       params['type'] = type
     if facility:
       params['facility'] = facility
-    result = self.session.get('{}/v1/truck-tickets'.format(self.url), headers=headers, params=params)
+    result = self.session.get('{}/v1/truck-tickets'.format(self.url), headers=headers, params=params, timeout=self.timeout)
     if result.status_code == 200:
       truck_tickets = result.json()
       logger.debug('Truck tickets: {}'.format(truck_tickets))
@@ -283,7 +284,7 @@ class Client():
   def post_truck_ticket(self, truck_ticket):
     logger.debug('Creating truck ticket {}'.format(truck_ticket))
     headers = self._get_headers()
-    result = self.session.post('{}/v1/truck-tickets'.format(self.url), headers=headers, json=truck_ticket)
+    result = self.session.post('{}/v1/truck-tickets'.format(self.url), headers=headers, json=truck_ticket, timeout=self.timeout)
     if result.status_code == 201:
       created_ticket = result.json()
       logger.debug('Truck ticket: {}'.format(created_ticket))
@@ -295,7 +296,7 @@ class Client():
     logger.debug('Creating truck ticket image size {}, content_type {}'.format(len(image), content_type))
     headers = self._get_headers()
     headers['content-type'] = content_type
-    result = self.session.put('{}/v1/truck-tickets/{}/image'.format(self.url, truck_ticket_id), headers=headers, data=image)
+    result = self.session.put('{}/v1/truck-tickets/{}/image'.format(self.url, truck_ticket_id), headers=headers, data=image, timeout=self.timeout)
     if result.status_code != 204:
       logger.exception(result.json())
       raise Client_Exception('Unable to create truck ticket image')
@@ -303,7 +304,7 @@ class Client():
   def put_alarm(self, asset_id, datatype, alarm):
     logger.debug('Creating alarm for {} {}'.format(asset_id, datatype))
     headers = self._get_headers()
-    result = self.session.put('{}/v1/alarms/{}/{}'.format(self.url, asset_id, datatype), headers=headers, json=alarm)
+    result = self.session.put('{}/v1/alarms/{}/{}'.format(self.url, asset_id, datatype), headers=headers, json=alarm, timeout=self.timeout)
     if result.status_code != 201:
       logger.exception(result.json())
       raise Exception('Unable to create alarm')
@@ -311,7 +312,7 @@ class Client():
   def post_datapoints(self, asset_id, datapoints):
     logger.debug('Posting datapoints')
     headers = self._get_headers()
-    result = self.session.post('{}/v1/datapoints/{}'.format(self.url, asset_id), headers=headers, json=datapoints)
+    result = self.session.post('{}/v1/datapoints/{}'.format(self.url, asset_id), headers=headers, json=datapoints, timeout=self.timeout)
     if result.status_code != 202:
       logger.exception(result.json())
       raise Exception('Unable to post datapoints')
@@ -319,7 +320,7 @@ class Client():
   def batch_put_well_production(self, production):
     logger.debug('Creating well production for {}'.format(production))
     headers = self._get_headers()
-    result = self.session.put('{}/v1/wells/production'.format(self.url), headers=headers, json=production)
+    result = self.session.put('{}/v1/wells/production'.format(self.url), headers=headers, json=production, timeout=self.timeout)
     if result.status_code != 201:
       logger.exception(result.json())
       raise Exception('Unable to batch create well production')
@@ -327,7 +328,7 @@ class Client():
   def put_well_production(self, well_id, date, production):
     logger.debug('Creating well production for {} {}: {}'.format(well_id, date, production))
     headers = self._get_headers()
-    result = self.session.put('{}/v1/wells/production/{}/{}'.format(self.url, well_id, date), headers=headers, json=production)
+    result = self.session.put('{}/v1/wells/production/{}/{}'.format(self.url, well_id, date), headers=headers, json=production, timeout=self.timeout)
     if result.status_code != 201:
       print(result.text)
       logger.exception(result.json())
@@ -345,7 +346,7 @@ class Client():
       params['start_date'] = start_date
     if end_date:
       params['end_date'] = end_date
-    result = self.session.get('{}/v1/wells/production'.format(self.url), headers=headers, params=params)
+    result = self.session.get('{}/v1/wells/production'.format(self.url), headers=headers, params=params, timeout=self.timeout)
     if result.status_code == 200:
       well_production = result.json()
       logger.debug('Well production: {}'.format(well_production))
@@ -356,7 +357,7 @@ class Client():
   def get_well_config(self, well_id):
     logger.debug('Getting config for {}'.format(well_id))
     headers = self._get_headers()
-    result = self.session.get('{}/v1/wells/{}/config'.format(self.url, well_id), headers=headers)
+    result = self.session.get('{}/v1/wells/{}/config'.format(self.url, well_id), headers=headers, timeout=self.timeout)
 
     if result.status_code == 200:
       config = result.json()
@@ -368,7 +369,7 @@ class Client():
   def get_well_type_curve(self, well_id):
     logger.debug('Getting type curve for {}'.format(well_id))
     headers = self._get_headers()
-    result = self.session.get('{}/v1/wells/{}/type-curve'.format(self.url, well_id), headers=headers)
+    result = self.session.get('{}/v1/wells/{}/type-curve'.format(self.url, well_id), headers=headers, timeout=self.timeout)
 
     if result.status_code == 200:
       type_curve = result.json()
@@ -380,7 +381,7 @@ class Client():
   def put_well_type_curve(self, well_id, curve):
     logger.debug('Creating type curve for {}'.format(well_id))
     headers = self._get_headers()
-    result = self.session.put('{}/v1/wells/{}/type-curve'.format(self.url, well_id), headers=headers, json=curve)
+    result = self.session.put('{}/v1/wells/{}/type-curve'.format(self.url, well_id), headers=headers, json=curve, timeout=self.timeout)
     if result.status_code != 201:
       logger.exception(result.json())
       raise Client_Exception('Unable to create well type curve')
@@ -388,7 +389,7 @@ class Client():
   def get_financials_categories(self):
     logger.debug('Getting financials categories')
     headers = self._get_headers()
-    result = self.session.get('{}/v1/financials-categories'.format(self.url), headers=headers)
+    result = self.session.get('{}/v1/financials-categories'.format(self.url), headers=headers, timeout=self.timeout)
 
     if result.status_code == 200:
       categories = result.json()
@@ -400,7 +401,7 @@ class Client():
   def post_financials_category(self, category):
     logger.debug('Creating financials category {}'.format(category))
     headers = self._get_headers()
-    result = self.session.post('{}/v1/financials-categories'.format(self.url), headers=headers, json=category)
+    result = self.session.post('{}/v1/financials-categories'.format(self.url), headers=headers, json=category, timeout=self.timeout)
     if result.status_code == 201:
       created = result.json()
       logger.debug('Financials Category: {}'.format(created))
@@ -411,7 +412,7 @@ class Client():
   def put_financials(self, type, type_id, month, financials):
     logger.debug('Putting financials for {} {} {}'.format(type, type_id, month))
     headers = self._get_headers()
-    result = self.session.put('{}/v1/financials/{}/{}/{}'.format(self.url, type, type_id, month), headers=headers, json=financials)
+    result = self.session.put('{}/v1/financials/{}/{}/{}'.format(self.url, type, type_id, month), headers=headers, json=financials, timeout=self.timeout)
     if result.status_code not in [200, 201]:
       logger.exception(result.json())
       raise Client_Exception('Unable to put financials')
@@ -419,7 +420,7 @@ class Client():
   def put_facility_sales(self, facility_id, month, sales):
     logger.debug('Putting sales for {} {}'.format(facility_id, month))
     headers = self._get_headers()
-    result = self.session.put('{}/v1/facilities/sales/{}/{}'.format(self.url, facility_id, month), headers=headers, json=sales)
+    result = self.session.put('{}/v1/facilities/sales/{}/{}'.format(self.url, facility_id, month), headers=headers, json=sales, timeout=self.timeout)
     if result.status_code not in [200, 201]:
       logger.exception(result.json())
       raise Client_Exception('Unable to put sales')
@@ -427,7 +428,7 @@ class Client():
   def put_well_config(self, well_id, config):
     logger.debug('Putting config for {}'.format(well_id))
     headers = self._get_headers()
-    result = self.session.put('{}/v1/wells/{}/config'.format(self.url, well_id), headers=headers, json=config)
+    result = self.session.put('{}/v1/wells/{}/config'.format(self.url, well_id), headers=headers, json=config, timeout=self.timeout)
     if result.status_code != 201:
       logger.exception(result.json())
       raise Client_Exception('Unable to put well config')
