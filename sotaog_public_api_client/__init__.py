@@ -353,6 +353,20 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve well production')
 
+  def list_well_status(self, well_ids = None):
+    logger.debug('Getting well status')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    result = self.session.get('{}/v1/wells/status/latest'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      well_status = result.json()
+      logger.debug('Well status: {}'.format(well_status))
+      return well_status
+    else:
+      raise Client_Exception('Unable to retrieve well status')
+
   def get_well_config(self, well_id):
     logger.debug('Getting config for {}'.format(well_id))
     headers = self._get_headers()
