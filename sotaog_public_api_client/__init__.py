@@ -105,6 +105,18 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve facility {}'.format(facility_id))
 
+  def get_facility_config(self, facility_id):
+    logger.debug('Getting config for {}'.format(facility_id))
+    headers = self._get_headers()
+    result = self.session.get('{}/v1/facilities/{}/config'.format(self.url, facility_id), headers=headers)
+
+    if result.status_code == 200:
+      config = result.json()
+      logger.debug('config: {}'.format(config))
+      return config
+    else:
+      raise Client_Exception('Unable to retrieve config')
+
   def get_asset(self, asset_id, type = 'assets'):
     logger.debug('Getting asset {} of type: {}'.format(asset_id, type))
     headers = self._get_headers()
@@ -429,6 +441,14 @@ class Client():
     if result.status_code not in [200, 201]:
       logger.exception(result.json())
       raise Client_Exception('Unable to put financials')
+
+  def put_facility_config(self, facility_id, config):
+    logger.debug('Putting config for {}'.format(facility_id))
+    headers = self._get_headers()
+    result = self.session.put('{}/v1/facilities/{}/config'.format(self.url, facility_id), headers=headers, json=config)
+    if result.status_code != 201:
+      logger.exception(result.json())
+      raise Client_Exception('Unable to put facility config')
 
   def put_facility_sales(self, facility_id, month, sales):
     logger.debug('Putting sales for {} {}'.format(facility_id, month))
