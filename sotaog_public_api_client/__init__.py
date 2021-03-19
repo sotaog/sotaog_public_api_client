@@ -1,5 +1,7 @@
-import os
+import csv
 import logging
+import os
+
 import requests
 
 logger = logging.getLogger('sotaog_public_api_client')
@@ -100,7 +102,7 @@ class Client():
     result = self.session.get('{}/v1/facilities/{}'.format(self.url, facility_id), headers=headers)
     if result.status_code == 200:
       facility = result.json()
-      logger.debug('Facility: {}', facility)
+      logger.debug('Facility: {}'.format(facility))
       return facility
     else:
       raise Client_Exception('Unable to retrieve facility {}'.format(facility_id))
@@ -465,3 +467,17 @@ class Client():
     if result.status_code != 201:
       logger.exception(result.json())
       raise Client_Exception('Unable to put well config')
+  
+  def get_strapping_table(self, asset_id, type = 'tanks'):
+    logger.debug('Getting strapping table for {} of type: {}'.format(asset_id, type))
+    headers = self._get_headers()
+    result = self.session.get('{}/v1/{}/{}/strapping'.format(self.url, type, asset_id), headers=headers)
+    if result.status_code == 200:
+      strapping_table = result.content.decode()
+      logger.debug('Strapping Table: {}'.format(strapping_table))
+      reader = csv.reader(strapping_table.split('\n'), delimiter=',')
+      strapping_table = {float(row[0]):float(row[1]) for row in reader}
+      logger.debug('Strapping Table: {}'.format(strapping_table))
+      return strapping_table
+    else:
+      raise Client_Exception('Unable to retrieve strapping table for asset {} of type {}'.format(asset_id, type))
