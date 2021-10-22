@@ -481,3 +481,29 @@ class Client():
       return strapping_table
     else:
       raise Client_Exception('Unable to retrieve strapping table for asset {} of type {}'.format(asset_id, type))
+
+  def batch_put_well_datapoint(self, datapoint):
+    logger.debug('Creating well datapoint for {}'.format(datapoint))
+    headers = self._get_headers()
+    result = self.session.put('{}/v1/wells/datapoint'.format(self.url), headers=headers, json=datapoint)
+    if result.status_code != 201:
+      logger.exception(result.json())
+      raise Exception('Unable to batch create well datapoint')
+
+  def get_well_datapoint(self, well_ids = None, datapoints = None, timestamps = None):
+    logger.debug('Getting well datapoint')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if datapoints:
+      params['datapoints'] = datapoints
+    if timestamps:
+      params['timestamps'] = timestamps
+    result = self.session.get('{}/v1/wells/datapoint'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      well_datapoint = result.json()
+      logger.debug('Well datapoint: {}'.format(well_datapoint))
+      return well_datapoint
+    else:
+      raise Client_Exception('Unable to retrieve well datapoint')
