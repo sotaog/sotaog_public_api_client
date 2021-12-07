@@ -343,7 +343,6 @@ class Client():
     headers = self._get_headers()
     result = self.session.put('{}/v1/wells/production/{}/{}'.format(self.url, well_id, date), headers=headers, json=production)
     if result.status_code != 201:
-      print(result.text)
       logger.exception(result.json())
       raise Exception('Unable to create well production')
 
@@ -487,7 +486,6 @@ class Client():
       logger.debug('Financials Category Price: {}'.format(created))
       return created
     else:
-      print(result)
       raise Client_Exception('Unable to create financials categories price')
 
   def put_financials(self, type, type_id, month, financials):
