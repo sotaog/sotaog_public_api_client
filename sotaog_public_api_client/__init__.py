@@ -413,6 +413,48 @@ class Client():
       logger.exception(result.json())
       raise Client_Exception('Unable to create well type curve')
 
+  def get_well_tpr_ipr_curve(self, well_id, refresh):
+    logger.debug('Getting TPR/IPR curve for {}'.format(well_id))
+    headers = self._get_headers()
+    params = {}
+    if refresh:
+      params['refresh'] = refresh
+    result = self.session.get('{}/v1/wells/{}/tpr-ipr-curve'.format(self.url, well_id), headers=headers, params=params)
+    if result.status_code == 200:
+      data = result.json()
+      logger.debug('TPR/IPR curve data: {}'.format(data))
+      return data
+    else:
+      raise Client_Exception('Unable to retrieve IPR/TPR curve')
+      
+  def get_res_mgmt_plots(self, well_id, refresh):
+    logger.debug('Getting resevior mgmt plot data for {}'.format(well_id))
+    headers = self._get_headers()
+    params = {}
+    if refresh:
+      params['refresh'] = refresh
+    result = self.session.get('{}/v1/wells/{}/res_mgmt_plots'.format(self.url, well_id), headers=headers, params=params)
+    if result.status_code == 200:
+      data = result.json()
+      logger.debug('resevior mgmt plot data: {}'.format(data))
+      return data
+    else:
+      raise Client_Exception('Unable to retrieve resevior mgmt plot data')
+      
+  def get_flowing_bottom_hole_pressure(self, well_id, refresh):
+    logger.debug('Getting flowing bottom hole pressure history for {}'.format(well_id))
+    headers = self._get_headers()
+    params = {}
+    if refresh:
+      params['refresh'] = refresh
+    result = self.session.get('{}/v1/wells/{}/flowing-bottom-hole-pressure'.format(self.url, well_id), headers=headers, params=params)
+    if result.status_code == 200:
+      data = result.json()
+      logger.debug('flowing bottom hole pressure history: {}'.format(data))
+      return data
+    else:
+      raise Client_Exception('Unable to retrieve flowing bottom hole pressure history')
+
   def get_financials_categories(self):
     logger.debug('Getting financials categories')
     headers = self._get_headers()
@@ -435,6 +477,18 @@ class Client():
       return created
     else:
       raise Client_Exception('Unable to create financials categories')
+
+  def post_financials_category_price(self, price):
+    logger.debug('Creating financials category price {}'.format(price))
+    headers = self._get_headers()
+    result = self.session.post('{}/v1/financials-categories-price'.format(self.url), headers=headers, json=price)
+    if result.status_code == 201:
+      created = result.json()
+      logger.debug('Financials Category Price: {}'.format(created))
+      return created
+    else:
+      print(result)
+      raise Client_Exception('Unable to create financials categories price')
 
   def put_financials(self, type, type_id, month, financials):
     logger.debug('Putting financials for {} {} {}'.format(type, type_id, month))
