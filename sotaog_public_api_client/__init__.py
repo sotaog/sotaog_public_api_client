@@ -404,13 +404,13 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve type curve')
 
-  def put_well_type_curve(self, well_id, curve):
+  def batch_well_type_curve(self, well_id, curves):
     logger.debug('Creating type curve for {}'.format(well_id))
     headers = self._get_headers()
-    result = self.session.put('{}/v1/wells/{}/type-curve'.format(self.url, well_id), headers=headers, json=curve)
+    result = self.session.put('{}/v1/wells/{}/type-curve'.format(self.url, well_id), headers=headers, json=curves)
     if result.status_code != 201:
       logger.exception(result.json())
-      raise Client_Exception('Unable to create well type curve')
+      raise Client_Exception('Unable to create well type curves')
 
   def get_well_tpr_ipr_curve(self, well_id, refresh):
     logger.debug('Getting TPR/IPR curve for {}'.format(well_id))
