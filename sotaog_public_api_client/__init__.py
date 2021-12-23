@@ -350,6 +350,14 @@ class Client():
     else:
       raise Client_Exception('Unable to create truck ticket')
 
+  def put_truck_ticket(self, truck_ticket_id, truck_ticket):
+    logger.debug('Putting truck_ticket for {}'.format(truck_ticket_id))
+    headers = self._get_headers()
+    result = self.session.post('{}/v1/truck-tickets/{}'.format(self.url, truck_ticket_id), headers=headers, json=truck_ticket)
+    if result.status_code != 201 and result.status_code != 200:
+      logger.exception(result.json())
+      raise Client_Exception('Unable to update truck-ticket')
+
   def put_truck_ticket_image(self, truck_ticket_id, image, content_type):
     logger.debug('Creating truck ticket image size {}, content_type {}'.format(len(image), content_type))
     headers = self._get_headers()
