@@ -488,6 +488,21 @@ class Client():
     else:
       raise Client_Exception('Unable to create financials categories price')
 
+  def get_well_financials_category_prices(self, date, well_ids = None):
+    logger.debug('Getting financials categories prices')
+    headers = self._get_headers()
+    params = {'date': date}
+    if well_ids:
+      params['well_ids'] = well_ids
+    result = self.session.get('{}/v1/financials-categories-well-price'.format(self.url), headers=headers, params=params)
+
+    if result.status_code == 200:
+      categories = result.json()
+      logger.debug('Financials Categories: {}'.format(categories))
+      return categories
+    else:
+      raise Client_Exception('Unable to retrieve financials categories')
+
   def put_financials(self, type, type_id, month, financials):
     logger.debug('Putting financials for {} {} {}'.format(type, type_id, month))
     headers = self._get_headers()
@@ -495,6 +510,32 @@ class Client():
     if result.status_code not in [200, 201]:
       logger.exception(result.json())
       raise Client_Exception('Unable to put financials')
+
+  def get_financials(self, type = 'wells', well_ids = None, facility_ids = None, lease_ids = None, start_date = None, end_date = None, start_month = None, end_month = None):
+    logger.debug('Getting type financials')
+    headers = self._get_headers()
+    params = {'type_name': type}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if facility_ids:
+      params['facility_ids'] = facility_ids
+    if lease_ids:
+      params['lease_ids'] = lease_ids
+    if start_date:
+      params['start_date'] = start_date
+    if end_date:
+      params['end_date'] = end_date
+    if start_month:
+      params['start_month'] = start_month
+    if end_month:
+      params['end_month'] = end_month
+    result = self.session.get('{}/v1/financials/{}'.format(self.url, type), headers=headers, params=params)
+    if result.status_code == 200:
+      financials = result.json()
+      logger.debug('type financials: {}'.format(financials))
+      return financials
+    else:
+      raise Client_Exception('Unable to retrieve type financials')
 
   def put_facility_config(self, facility_id, config):
     logger.debug('Putting config for {}'.format(facility_id))
