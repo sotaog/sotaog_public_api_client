@@ -553,6 +553,24 @@ class Client():
       logger.exception(result.json())
       raise Client_Exception('Unable to put sales')
 
+  def list_well_sales(self, well_ids=None, start_date=None, end_date=None):
+    logger.debug('Getting well sales')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if start_date:
+      params['start_date'] = start_date
+    if end_date:
+      params['end_date'] = end_date
+    result = self.session.get('{}/v1/wells/sales/daily'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      well_sales = result.json()
+      logger.debug('Well production: {}'.format(well_sales))
+      return well_sales
+    else:
+      raise Client_Exception('Unable to retrieve well sales')
+
   def put_well_config(self, well_id, config):
     logger.debug('Putting config for {}'.format(well_id))
     headers = self._get_headers()
