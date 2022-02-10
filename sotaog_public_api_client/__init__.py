@@ -404,6 +404,29 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve type curve')
 
+  def get_type_curves(self, well_ids = None, facility_ids = None, lease_ids = None, start_date = None, end_date = None, combine = True):
+    logger.debug('Getting type curves')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if facility_ids:
+      params['facility_ids'] = facility_ids
+    if lease_ids:
+      params['lease_ids'] = lease_ids
+    if start_date:
+      params['start_date'] = start_date
+    if end_date:
+      params['end_date'] = end_date
+    params['combine'] = combine
+    result = self.session.get('{}/v1/type-curves'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      curves = result.json()
+      logger.debug('Type curves: {}'.format(curves))
+      return curves
+    else:
+      raise Client_Exception('Unable to retrieve type curves')
+
   def batch_well_type_curve(self, well_id, curves):
     logger.debug('Creating type curve for {}'.format(well_id))
     headers = self._get_headers()
