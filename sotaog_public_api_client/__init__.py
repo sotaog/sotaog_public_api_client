@@ -662,3 +662,13 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve well datapoint')
       
+  def get_custom_reports(self):
+    logger.debug('Getting custom reports list')
+    headers = self._get_headers()
+    result = self.session.get('{}/v1/custom_reports'.format(self.url), headers=headers)
+    if result.status_code == 200:
+      reports = result.json()
+      logger.debug('custom reports: {}'.format(reports))
+      return reports
+    else:
+      raise Client_Exception('Unable to retrieve custom reports list')
