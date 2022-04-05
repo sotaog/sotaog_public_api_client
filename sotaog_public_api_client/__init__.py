@@ -366,6 +366,26 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve well production')
 
+  def list_well_daily_warehouse(self, well_ids = None, facility_ids = None, start_date = None, end_date = None):
+    logger.debug('Getting well warehouse')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if facility_ids:
+      params['facility_ids'] = facility_ids
+    if start_date:
+      params['start_date'] = start_date
+    if end_date:
+      params['end_date'] = end_date
+    result = self.session.get('{}/v1/wells/warehouse'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      well_warehouse = result.json()
+      logger.debug('Well warehouse: {}'.format(well_warehouse))
+      return well_warehouse
+    else:
+      raise Client_Exception('Unable to retrieve well warehouse')
+
   def list_well_status(self, well_ids = None):
     logger.debug('Getting well status')
     headers = self._get_headers()
@@ -641,3 +661,4 @@ class Client():
       return well_datapoint
     else:
       raise Client_Exception('Unable to retrieve well datapoint')
+      
