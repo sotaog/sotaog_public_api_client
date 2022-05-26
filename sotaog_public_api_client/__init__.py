@@ -81,6 +81,17 @@ class Client():
       return alarms
     else:
       raise Client_Exception('Unable to retrieve alarms')
+  
+  def post_custom_alarm_incidents(self, incidents):
+    logger.debug('Creating Alarm Incidents {}'.format(incidents))
+    headers = self._get_headers()
+    result = self.session.put('{}/v1/custom-alarms-incidents'.format(self.url), headers=headers, json=incidents)
+    if result.status_code == 201:
+      created = result.json()
+      logger.debug('Alarms Incidents: {}'.format(created))
+      return created
+    else:
+      raise Client_Exception('Unable to create Alarm Incidents')
 
   def get_alarm(self, asset_id, datatype = None):
     logger.debug('Getting alarms for {}'.format(asset_id))
