@@ -71,10 +71,21 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve alarms')
     
-  def get_canacol_alarms(self):
+  def get_custom_alarms(self):
     logger.debug('Getting alarms')
     headers = self._get_headers()
     result = self.session.get('{}/v1/custom-alarms'.format(self.url), headers=headers)
+    if result.status_code == 200:
+      alarms = result.json()
+      logger.debug('Alarms: {}'.format(alarms))
+      return alarms
+    else:
+      raise Client_Exception('Unable to retrieve alarms')
+  
+  def get_custom_alarm(self,alarms_id):
+    logger.debug('Getting alarms')
+    headers = self._get_headers()
+    result = self.session.get('{}/v1/custom-alarms/{}'.format(self.url, alarms_id), headers=headers)
     if result.status_code == 200:
       alarms = result.json()
       logger.debug('Alarms: {}'.format(alarms))
