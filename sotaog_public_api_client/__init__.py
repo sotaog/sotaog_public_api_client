@@ -667,6 +667,17 @@ class Client():
       logger.exception(result.json())
       raise Client_Exception('Unable to put well config')
   
+  def get_wells_list(self):
+    logger.debug('Getting wells')
+    headers = self._get_headers()
+    result = self.session.get('{}/v1/wells'.format(self.url), headers=headers)
+    if result.status_code == 200:
+      result = result.json()
+      return result
+    else:
+      logger.exception(result.json())
+      raise Client_Exception('Unable to get wells list')
+    
   def get_strapping_table(self, asset_id, type = 'tanks'):
     logger.debug('Getting strapping table for {} of type: {}'.format(asset_id, type))
     headers = self._get_headers()
