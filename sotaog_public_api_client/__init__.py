@@ -339,6 +339,26 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve truck tickets')
 
+  def get_auto_truck_tickets(self, facility = None, type = None, start_ts = None, end_ts = None):
+    logger.debug('Getting auto truck tickets')
+    headers = self._get_headers()
+    params = {}
+    if start_ts:
+      params['start_ts'] = start_ts
+    if end_ts:
+      params['end_ts'] = end_ts
+    if type:
+      params['type'] = type
+    if facility:
+      params['facility'] = facility
+    result = self.session.get('{}/v1/auto-truck-tickets'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      truck_tickets = result.json()
+      logger.debug('Auto Truck tickets: {}'.format(truck_tickets))
+      return truck_tickets
+    else:
+      raise Client_Exception('Unable to retrieve truck tickets')
+
   def post_truck_ticket(self, truck_ticket):
     logger.debug('Creating truck ticket {}'.format(truck_ticket))
     headers = self._get_headers()
@@ -349,6 +369,17 @@ class Client():
       return created_ticket
     else:
       raise Client_Exception('Unable to create truck ticket')
+
+  def post_auto_truck_ticket(self, truck_ticket):
+    logger.debug('Creating auto truck ticket {}'.format(truck_ticket))
+    headers = self._get_headers()
+    result = self.session.post('{}/v1/auto-truck-tickets'.format(self.url), headers=headers, json=truck_ticket)
+    if result.status_code == 201:
+      created_ticket = result.json()
+      logger.debug('Auto Truck ticket: {}'.format(created_ticket))
+      return created_ticket
+    else:
+      raise Client_Exception('Unable to create auto truck ticket')
 
   def put_truck_ticket(self, truck_ticket_id, truck_ticket):
     logger.debug('Putting truck_ticket for {}'.format(truck_ticket_id))
