@@ -283,6 +283,22 @@ class Client():
       logger.debug(result.json())
       raise Client_Exception('Unable to get datapoints')
 
+  def get_oil_gas_price(self, start_date = None, end_date = None):
+    logger.debug('Getting prices')
+    headers = self._get_headers()
+    params = {}
+    if start_date:
+      params['start_date'] = start_date
+    if end_date:
+      params['end_date'] = end_date
+    result = self.session.get('{}/v1/financials/oil-gas-price'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      prices = result.json()
+      logger.debug('Oil Gas Prices: {}'.format(prices))
+      return prices
+    else:
+      raise Client_Exception('Unable to retrieve Oil Gas prices')
+
   def get_asset_datapoints(self, asset_id, datatypes = [], start_ts = None, end_ts = None, sort = 'desc', limit = 100):
     logger.debug('Getting datapoints for asset: {}'.format(asset_id))
     headers = self._get_headers()
@@ -705,7 +721,7 @@ class Client():
     if result.status_code != 201:
       logger.exception(result.json())
       raise Client_Exception('Unable to put well config')
-  
+    
   def get_strapping_table(self, asset_id, type = 'tanks'):
     logger.debug('Getting strapping table for {} of type: {}'.format(asset_id, type))
     headers = self._get_headers()
