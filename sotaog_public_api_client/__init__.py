@@ -654,10 +654,11 @@ class Client():
       logger.exception(result.json())
       raise Client_Exception('Unable to put financials')
 
-  def get_financials(self, type = 'wells', well_ids = None, facility_ids = None, lease_ids = None, start_date = None, end_date = None, start_month = None, end_month = None):
+  def get_financials(self, asset_type = 'wells', type = 'production', well_ids = None, facility_ids = None, lease_ids = None, start_date = None, end_date = None, start_month = None, end_month = None):
     logger.debug('Getting type financials')
     headers = self._get_headers()
-    params = {'type_name': type}
+    params = {'asset_type': asset_type}
+    params = {'type': type}
     if well_ids:
       params['well_ids'] = well_ids
     if facility_ids:
