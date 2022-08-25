@@ -673,7 +673,7 @@ class Client():
       params['start_month'] = start_month
     if end_month:
       params['end_month'] = end_month
-    result = self.session.get('{}/v1/financials/{}'.format(self.url, type), headers=headers, params=params)
+    result = self.session.get('{}/v1/financials/{}'.format(self.url, asset_type), headers=headers, params=params)
     if result.status_code == 200:
       financials = result.json()
       logger.debug('type financials: {}'.format(financials))
