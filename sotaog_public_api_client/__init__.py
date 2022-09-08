@@ -791,3 +791,21 @@ class Client():
       return reports
     else:
       raise Client_Exception('Unable to retrieve tank gauge report list')
+
+  def list_oil_report(self, well_ids = None, start_date = None, end_date = None):
+    logger.debug('Getting oil report list')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if start_date:
+      params['start_date'] = start_date
+    if end_date:
+      params['end_date'] = end_date
+    result = self.session.get('{}/v1/wells/report/oil'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      reports = result.json()
+      logger.debug('oil reports: {}'.format(reports))
+      return reports
+    else:
+      raise Client_Exception('Unable to retrieve oil report list')
