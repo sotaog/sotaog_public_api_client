@@ -809,3 +809,12 @@ class Client():
       return reports
     else:
       raise Client_Exception('Unable to retrieve oil report list')
+
+  def send_sms(self, to_numbers, sms_text):
+    logger.debug('Sending sms to {}'.format(to_numbers))
+    headers = self._get_headers()
+    body = { 'to_numbers': to_numbers, 'text': sms_text }
+    result = self.session.post('{}/v1/sms'.format(self.url), headers=headers, json=body)
+    if result.status_code not in [200, 201]:
+      logger.exception(result.json())
+      raise Client_Exception('Unable to send sms')
