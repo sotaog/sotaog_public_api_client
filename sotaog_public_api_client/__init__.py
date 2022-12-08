@@ -466,6 +466,25 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve well production')
 
+  def res_mgmt_plots(self, well_id, refresh = None, refresh_abandonment_pressure = None,  start_date = None, end_date = None):
+    logger.debug('Getting Well Mgmt Data')
+    headers = self._get_headers()
+    params = {}
+    if refresh:
+      params['refresh'] = refresh
+    if refresh_abandonment_pressure:
+      params['refresh_abandonment_pressure'] = refresh_abandonment_pressure
+    if start_date and end_date:
+      params['start_date'] = start_date
+      params['end_date'] = end_date
+    result = self.session.get('{}/v1/wells/{}/res_mgmt_plots'.format(self.url,well_id), headers=headers, params=params)
+    if result.status_code == 200:
+      well_mgmt = result.json()
+      logger.debug('Well Mgmt Data: {}'.format(well_mgmt))
+      return well_mgmt
+    else:
+      raise Client_Exception('Unable to retrieve well mgmt Data')
+
   def list_well_daily_warehouse(self, well_ids = None, facility_ids = None, start_date = None, end_date = None):
     logger.debug('Getting well warehouse')
     headers = self._get_headers()
