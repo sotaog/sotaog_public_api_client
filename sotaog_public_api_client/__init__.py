@@ -816,5 +816,4 @@ class Client():
     body = { 'to_numbers': to_numbers, 'text': sms_text }
     result = self.session.post('{}/v1/sms'.format(self.url), headers=headers, json=body)
     if result.status_code not in [200, 201]:
-      logger.exception(result.json())
       raise Client_Exception('Unable to send sms')
