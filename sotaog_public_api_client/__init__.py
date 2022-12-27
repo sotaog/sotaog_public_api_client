@@ -212,6 +212,17 @@ class Client():
     else:
       raise Client_Exception('Unable to get asset types')
 
+  def get_compressors(self):
+    logger.debug('Getting compressors')
+    headers = self._get_headers()
+    result = self.session.get('{}/v1/compressors'.format(self.url), headers=headers)
+    if result.status_code == 200:
+      compressors = result.json()
+      logger.debug('Compressors: {}'.format(compressors))
+      return compressors
+    else:
+      raise Client_Exception('Unable to get compressors')
+
   def get_customers(self):
     logger.debug('Getting customers')
     headers = self._get_headers()
