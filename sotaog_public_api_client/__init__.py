@@ -848,3 +848,19 @@ class Client():
       return response
     else:
       raise Client_Exception('Unable to send sms')
+  
+  def get_today_predicted(self, well_ids = None, refresh = False):
+    logger.debug('Getting today predicted')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if refresh:
+      params['refresh'] = refresh
+    result = self.session.get('{}/v1/wells/production/today-prediction'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      response = result.json()
+      logger.debug('Today predicted: {}'.format(response))
+      return response
+    else:
+      raise Client_Exception('Unable to retrieve today predicted')    
