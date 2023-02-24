@@ -476,6 +476,23 @@ class Client():
       return well_production
     else:
       raise Client_Exception('Unable to retrieve well production')
+    
+  def list_well_optimised_production(self, well_ids = None, facility_ids = None):
+    logger.debug('Getting well optimised production')
+    headers = self._get_headers()
+    params = {}
+    if well_ids:
+      params['well_ids'] = well_ids
+    if facility_ids:
+      params['facility_ids'] = facility_ids
+
+    result = self.session.get('{}/v1/wells/optimized-production'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      well_production = result.json()
+      logger.debug('Well optimised production: {}'.format(well_production))
+      return well_production
+    else:
+      raise Client_Exception('Unable to retrieve well optimised production')    
 
   def get_critical_rate_analysis(self, well_id, refresh = None, start_date = None, end_date = None):
     logger.debug('Getting Critical Rate Data')
