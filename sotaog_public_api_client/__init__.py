@@ -448,6 +448,14 @@ class Client():
     if result.status_code != 201:
       logger.exception(result.json())
       raise Exception('Unable to batch create well production')
+    
+  def put_compressor_downtime(self, compressor):
+    logger.debug('Creating compressor downtime for {}'.format(compressor))
+    headers = self._get_headers()
+    result = self.session.put('{}/v1/compressors/downtime'.format(self.url), headers=headers, json=compressor)
+    if result.status_code != 201:
+      logger.exception(result.json())
+      raise Exception('Unable to create compressor downtime')
 
   def put_well_production(self, well_id, date, production):
     logger.debug('Creating well production for {} {}: {}'.format(well_id, date, production))
