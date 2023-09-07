@@ -93,6 +93,52 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve alarms')
   
+  def get_custom_alarm_new(self,alarm_id):
+    logger.debug('Getting alarms')
+    headers = self._get_headers()
+    result = self.session.get('{}/v2/custom-alarms-new/{}'.format(self.url, alarm_id), headers=headers)
+    if result.status_code == 200:
+      alarms = result.json()
+      logger.debug('Alarms: {}'.format(alarms))
+      return alarms
+    else:
+      raise Client_Exception('Unable to retrieve alarms')
+
+  def get_custom_alarms_new(self):
+    logger.debug('Getting alarms')
+    headers = self._get_headers()
+    result = self.session.get('{}/v2/custom-alarms-new'.format(self.url), headers=headers)
+    if result.status_code == 200:
+      alarms = result.json()
+      logger.debug('Alarms: {}'.format(alarms))
+      return alarms
+    else:
+      raise Client_Exception('Unable to retrieve alarms')
+
+  def get_alarm_incidents_new(self,customer_id, alarm_id, asset_id, alarm_status):
+    logger.debug('Getting alarms')
+    headers = self._get_headers()
+    url = '{}/v2/custom-alarms-incidents-new?customer_id={}&alarm_id={}&asset_id={}&alarm_status={}'.format(self.url,customer_id, alarm_id, asset_id,alarm_status)   
+    result = self.session.get(url, headers=headers)
+    if result.status_code == 200:
+      alarms = result.json()
+      logger.debug('Alarms: {}'.format(alarms))
+      return alarms
+    else:
+      raise Client_Exception('Unable to retrieve alarms incidents')
+  
+  def post_custom_alarm_incidents_new(self, incidents):
+    logger.debug('Creating Alarm Incidents {}'.format(incidents))
+    headers = self._get_headers()
+    result = self.session.put('{}/v2/custom-alarms-incidents-new'.format(self.url), headers=headers, json=incidents)
+    if result.status_code == 200:
+      created = result.json()
+      logger.debug('Alarms Incidents: {}'.format(created))
+      return created
+    else:
+      raise Client_Exception('Unable to create Alarm Incidents')
+  
+  
   def get_alarm_incidents(self,alarm_id, well_id, alarm_status):
     logger.debug('Getting alarms')
     headers = self._get_headers()
