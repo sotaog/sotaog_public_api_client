@@ -356,6 +356,33 @@ class Client():
     else:
       raise Client_Exception('Unable to retrieve Oil Gas prices')
 
+  def get_oil_gas_future_price(self, start_month = None, end_month = None):
+    logger.debug('Getting prices')
+    headers = self._get_headers()
+    params = {}
+    if start_month:
+      params['start_month'] = start_month
+    if end_month:
+      params['end_month'] = end_month
+    result = self.session.get('{}/v1/financials/oil-gas-future-price'.format(self.url), headers=headers, params=params)
+    if result.status_code == 200:
+      prices = result.json()
+      logger.debug('Oil Gas Prices: {}'.format(prices))
+      return prices
+    else:
+      raise Client_Exception('Unable to retrieve Oil Gas prices')
+
+  def put_oil_gas_future_price(self, body):
+    logger.debug('Getting prices')
+    headers = self._get_headers()
+    result = self.session.put('{}/v1/financials/oil-gas-future-price'.format(self.url), headers=headers, json=body)
+    if result.status_code == 200:
+      prices = result.json()
+      logger.debug('Oil Gas Prices: {}'.format(prices))
+      return prices
+    else:
+      raise Client_Exception('Unable to retrieve Oil Gas prices')
+
   def get_asset_datapoints(self, asset_id, datatypes = [], start_ts = None, end_ts = None, sort = 'desc', limit = 100):
     logger.debug('Getting datapoints for asset: {}'.format(asset_id))
     headers = self._get_headers()
